@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import errno
 import json
 import subprocess
@@ -253,10 +254,11 @@ def upload(config):
 
 def install_env(config):
     """
-    Creates a virtualenv environment in the `env/` folder, and attempts to install `transcrypt` into it.
+    Creates a virtualenv environment in the `env/` folder, and attempts to install
+    `transcrypt` into it.
 
-    If `enter-env` is False in the `config.json` file, this will instead install `transcrypt`
-    into the default location for the `pip` binary which is in the path.
+    If `enter-env` is False in the `config.json` file, this will instead install
+    `transcrypt` into the default location for the `pip` binary which is in the path.
 
     :type config: Configuration
     """
@@ -270,16 +272,19 @@ def install_env(config):
             if sys.version_info >= (3, 5):
                 args = ['virtualenv', '--system-site-packages', env_dir]
             else:
-                args = ['virtualenv', '-p', 'python3.5', '--system-site-packages', env_dir]
+                args = ['virtualenv', '-p', 'python3.5',
+                        '--system-site-packages', env_dir]
 
             ret = subprocess.Popen(args, cwd=config.base_dir).wait()
 
             if ret != 0:
-                raise Exception("virtualenv failed. exit code: {}. command line '{}'. working dir: '{}'."
-                                .format(ret, "' '".join(args), config.base_dir))
+                print_string = "virtualenv failed. exit code: {}. command line '{}'."
+                print_string += "working dir: '{}'."
+                print_string.format(ret, "' '".join(args), config.base_dir)
+                raise Exception(print_string)
 
-        if not os.path.exists(os.path.join(env_dir, 'bin', 'transcrypt')) and not os.path.exists(
-                os.path.join(env_dir, 'scripts', 'transcrypt.exe')):
+        if (not os.path.exists(os.path.join(env_dir, 'bin', 'transcrypt')) and
+           not os.path.exists(os.path.join(env_dir, 'scripts', 'transcrypt.exe'))):
             print("installing transcrypt into env...")
 
             requirements_file = os.path.join(config.base_dir, 'requirements.txt')
@@ -287,15 +292,19 @@ def install_env(config):
             pip_executable = config.pip_executable()
 
             if not pip_executable:
-                raise Exception("pip binary not found at any of {}".format(possible_pip_binary_paths(config)))
+                print_string = "pip binary not found at any of {}"
+                print_string.format(possible_pip_binary_paths(config))
+                raise Exception(print_string)
 
             install_args = [pip_executable, 'install', '-r', requirements_file]
 
             ret = subprocess.Popen(install_args, cwd=config.base_dir).wait()
 
             if ret != 0:
-                raise Exception("pip install failed. exit code: {}. command line '{}'. working dir: '{}'."
-                                .format(ret, "' '".join(install_args), config.base_dir))
+                print_string = "pip install failed. exit code: {}. command line '{}'."
+                print_string += "working dir: '{}'."
+                print_string.format(ret, "' '".join(install_args), config.base_dir)
+                raise Exception(print_string)
 
     else:
         if not shutil.which('transcrypt'):
@@ -306,15 +315,19 @@ def install_env(config):
             pip_executable = config.pip_executable()
 
             if not pip_executable:
-                raise Exception("pip binary not found at any of {}".format(possible_pip_binary_paths(config)))
+                print_string = "pip binary not found at any of {}"
+                print_string.format(possible_pip_binary_paths(config))
+                raise Exception(print_string)
 
             install_args = [pip_executable, 'install', '-r', requirements_file]
 
             ret = subprocess.Popen(install_args, cwd=config.base_dir).wait()
 
             if ret != 0:
-                raise Exception("pip install failed. exit code: {}. command line '{}'. working dir: '{}'."
-                                .format(ret, "' '".join(install_args), config.base_dir))
+                print_string = "pip install failed. exit code: {}. command line '{}'."
+                print_string += "working dir: '{}'."
+                print_string.format(ret, "' '".join(install_args), config.base_dir)
+                raise Exception(print_string)
 
 
 def main():
